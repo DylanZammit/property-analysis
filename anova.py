@@ -12,6 +12,7 @@ class ANOVA:
         df = pd.read_csv(fn, index_col=0)
         df = df[df.type != 'Garage']
         df.bedrooms = df.bedrooms.fillna(0)
+        df.bedrooms = df.bedrooms.astype(int)
 
         self.df = df
         self.fit()
@@ -20,9 +21,6 @@ class ANOVA:
         model = 'price ~ locality + type + bedrooms'
         lm = ols(model, self.df).fit()
         self.lm = lm
-
-    def __str__(self):
-        return self.lm.summary().as_text()
 
     def plot_by_type(self, minct=10):
         plt.figure()
@@ -58,9 +56,12 @@ class ANOVA:
     def predict(self, X):
         return self.lm.get_prediction(X).predicted_mean[0]
 
+    def __str__(self):
+        return self.lm.summary().as_text()
+
 class GUI:
 
-    def __init__(self, model):
+    def __init__(self, model, width=250, height=200):
         self.model = model
         locs = np.unique(model.df.locality)
         types = np.unique(model.df.type)
@@ -69,7 +70,7 @@ class GUI:
         window = Tk()
         window.resizable(False, False)
         window.title('House price ANOVA')
-        window.geometry('300x300')
+        window.geometry(f'{width}x{height}')
         
         locvar = StringVar(window)
         typevar = StringVar(window)
@@ -86,11 +87,11 @@ class GUI:
         wpricevar = Label(window, textvariable=pricevar)
         get_pred = Button(window, text="Get Prediction", command=self.get_prediction_action)
 
-        wloc.place(relx=0.2, rely=0.2, anchor='nw')
-        wtype.place(relx=0.2, rely=0.4, anchor='nw')
-        wbed.place(relx=0.2, rely=0.6, anchor='nw')
-        wpricevar.place(relx=0.7, rely=0.8, anchor='nw')
-        get_pred.place(relx=0.2, rely=0.8, anchor='nw')
+        wloc.place(relx=0.1, rely=0.2, anchor='nw')
+        wtype.place(relx=0.1, rely=0.4, anchor='nw')
+        wbed.place(relx=0.1, rely=0.6, anchor='nw')
+        wpricevar.place(relx=0.6, rely=0.8, anchor='nw')
+        get_pred.place(relx=0.1, rely=0.8, anchor='nw')
 
         self.model = model
         self.bedvar = bedvar
@@ -104,7 +105,7 @@ class GUI:
     def get_prediction_action(self):
         loc = self.locvar.get()
         ptype = self.typevar.get()
-        nbeds = int(float(self.bedvar.get()))
+        nbeds = int(self.bedvar.get())
         example = {'locality': loc, 'type': ptype, 'bedrooms': nbeds}
         price = self.model.predict(example)
         self.pricevar.set(f'€{int(price):,}')
