@@ -12,14 +12,17 @@ class ANOVA:
     def __init__(self, fn):
         df = pd.read_csv(fn)
         df = df[df.type != 'Garage']
-        df.bedrooms = df.bedrooms.fillna(0)
+        df = df.dropna()
         df.bedrooms = df.bedrooms.astype(int)
+
+        self.form = 'form' in df.columns
 
         self.df = df
         self.fit()
 
     def fit(self):
         model = 'price ~ C(locality) + C(type) + bedrooms + area'
+        if self.form: model += ' + C(form)'
         lm = ols(model, self.df).fit()
         self.lm = lm
 
@@ -62,7 +65,7 @@ class ANOVA:
 
 class GUI:
 
-    def __init__(self, model, width=250, height=250):
+    def __init__(self, model, width=500, height=250):
         self.model = model
         locs = np.unique(model.df.locality)
         types = np.unique(model.df.type)
@@ -100,12 +103,19 @@ class GUI:
         get_pred.place(relx=0.1, rely=0.8, anchor='nw')
         wpricevar.place(relx=0.6, rely=0.8, anchor='nw')
 
+        if model.form:
+            forms = np.unique(model.df.form)
+            formvar = StringVar(window)
+            wform = ttk.Combobox(window, textvariable=formvar, values=list(forms))
+            wform.place(relx=0.6, rely=0.3, anchor='nw')
+
         self.model = model
         self.bedvar = bedvar
         self.locvar = locvar
         self.typevar = typevar
         self.pricevar = pricevar
         self.warea = warea
+        self.wform = wform 
 
         mainloop()
 
@@ -118,6 +128,9 @@ class GUI:
         nbeds = int(self.bedvar.get())
         area = int(self.warea.get())
         example = {'locality': loc, 'type': ptype, 'bedrooms': nbeds, 'area': area}
+        if self.model.form:
+            form = self.wform.get()
+            example['form'] = form
         price = self.model.predict(example)
         self.pricevar.set(f'€{int(price):,}')
 
