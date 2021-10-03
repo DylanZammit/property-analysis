@@ -19,7 +19,7 @@ class ANOVA:
         self.fit()
 
     def fit(self):
-        model = 'price ~ C(locality) + C(type) + C(bedrooms) + area'
+        model = 'price ~ C(locality) + C(type) + bedrooms + area'
         lm = ols(model, self.df).fit()
         self.lm = lm
 

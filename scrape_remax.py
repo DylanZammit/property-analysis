@@ -5,7 +5,7 @@ import json
 import csv
 import time
 
-nprops = 1000
+nprops = 5000
 url = 'https://remax-malta.com/api/properties?Residential=true&Commercial=false&ForSale=true&ForRent=false&page=1&Take={}'.format(nprops)
 card_class = 'property-card--information'
 property_request_url = 'https://laravel.dhalia.com:8000/server.php/api/property?propertyRef='
@@ -34,6 +34,7 @@ for prop in data['Properties']:
     df['type'].append(prop['PropertyType'])
     df['bedrooms'].append(prop['TotalBedrooms'])
     df['bathrooms'].append(prop['TotalBathrooms'])
+    df['rooms'].append(prop['TotalRooms'])
     df['area'].append(prop['TotalSqm'])
 
 df = pd.DataFrame(df)

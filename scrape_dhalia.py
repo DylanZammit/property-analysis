@@ -12,7 +12,7 @@ headers = {"User-Agent": "Mozilla/5.0 (X11; CrOS x86_64 12871.102.0) AppleWebKit
 s = requests.Session()
 
 out_csv = 'dhalia_properties.csv'
-attributes = 'price region locality type bedrooms bathrooms area'.split()
+attributes = 'price region locality type bedrooms bathrooms area form'.split()
 with open(out_csv, 'w+') as f:
     writer = csv.writer(f)
     writer.writerow(attributes)
@@ -22,7 +22,7 @@ for j in range(1, 31):
     try:
         r = s.get(url+f'?pageIndex={j}', headers=headers)
     except Exception as e:
-        print(e)
+        print(f'Property {i+1}: Connection aborted!')
         continue
     soup = BeautifulSoup(r.text, 'lxml')
 
@@ -33,7 +33,11 @@ for j in range(1, 31):
         print(f'Property {i+1}', end='\r')
 
         reflink = card.find('span', class_='propertybox__ref-link').text
-        rprop = s.get(property_request_url+reflink, headers=headers)
+        try:
+            rprop = s.get(property_request_url+reflink, headers=headers)
+        except Exception as e:
+            print(f'Card {i+1}: Connection aborted!')
+            continue
         content = BeautifulSoup(rprop.text, 'lxml').decode()
         data = json.loads(content[content.find('{'):content.rfind('}')+1])
 
@@ -45,6 +49,7 @@ for j in range(1, 31):
         bedrooms = property_details['Bedrooms']
         bathrooms = property_details['Bathrooms']
         ptype = property_details['Type']
+        form = property_details['Form']
 
         df['price'].append(price)
         df['region'].append(region)
@@ -53,6 +58,7 @@ for j in range(1, 31):
         df['bedrooms'].append(bedrooms)
         df['bathrooms'].append(bathrooms)
         df['area'].append(sqm)
+        df['form'].append(form)
         time.sleep(0.5)
 
     df = pd.DataFrame(df)
