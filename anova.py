@@ -22,8 +22,7 @@ class ANOVA:
         self.lm = lm
 
     def __str__(self):
-        return self.lm.summary()
-
+        return self.lm.summary().as_text()
 
     def plot_by_type(self, minct=10):
         plt.figure()
