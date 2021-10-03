@@ -5,11 +5,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import argparse
 from tkinter import *
+from tkinter import ttk
 import numpy as np
 
 class ANOVA:
     def __init__(self, fn):
-        df = pd.read_csv(fn, index_col=0)
+        df = pd.read_csv(fn)
         df = df[df.type != 'Garage']
         df.bedrooms = df.bedrooms.fillna(0)
         df.bedrooms = df.bedrooms.astype(int)
@@ -18,7 +19,7 @@ class ANOVA:
         self.fit()
 
     def fit(self):
-        model = 'price ~ locality + type + bedrooms'
+        model = 'price ~ C(locality) + C(type) + C(bedrooms) + area'
         lm = ols(model, self.df).fit()
         self.lm = lm
 
@@ -61,7 +62,7 @@ class ANOVA:
 
 class GUI:
 
-    def __init__(self, model, width=250, height=200):
+    def __init__(self, model, width=250, height=250):
         self.model = model
         locs = np.unique(model.df.locality)
         types = np.unique(model.df.type)
@@ -76,37 +77,47 @@ class GUI:
         typevar = StringVar(window)
         bedvar = StringVar(window)
         pricevar = StringVar(window)
+        areavar = StringVar(window)
 
         locvar.set('Qawra')
         typevar.set('Penthouse')
         bedvar.set('3')
 
-        wloc = OptionMenu(window, locvar, *locs)
-        wtype = OptionMenu(window, typevar, *types)
-        wbed = OptionMenu(window, bedvar, *beds)
+        vcmd = (window.register(self.callback))
+
+        wloc = ttk.Combobox(window, textvariable=locvar, values=list(locs))
+        wtype = ttk.Combobox(window, textvariable=typevar, values=list(types))
+        wbed = ttk.Combobox(window, textvariable=bedvar, values=beds)
+        warea = Entry(validate='all', validatecommand=(vcmd, '%P')) 
+        warea.insert(0, 'Area in sq metres')
         wpricevar = Label(window, textvariable=pricevar)
         get_pred = Button(window, text="Get Prediction", command=self.get_prediction_action)
 
-        wloc.place(relx=0.1, rely=0.2, anchor='nw')
-        wtype.place(relx=0.1, rely=0.4, anchor='nw')
-        wbed.place(relx=0.1, rely=0.6, anchor='nw')
-        wpricevar.place(relx=0.6, rely=0.8, anchor='nw')
+        wloc.place(relx=0.1, rely=0.15, anchor='nw')
+        wtype.place(relx=0.1, rely=0.3, anchor='nw')
+        wbed.place(relx=0.1, rely=0.45, anchor='nw')
+        warea.place(relx=0.1, rely=0.6, anchor='nw')
         get_pred.place(relx=0.1, rely=0.8, anchor='nw')
+        wpricevar.place(relx=0.6, rely=0.8, anchor='nw')
 
         self.model = model
         self.bedvar = bedvar
         self.locvar = locvar
         self.typevar = typevar
         self.pricevar = pricevar
+        self.warea = warea
 
         mainloop()
 
+    def callback(self, P): 
+        return str.isdigit(P) or P == ""
 
     def get_prediction_action(self):
         loc = self.locvar.get()
         ptype = self.typevar.get()
         nbeds = int(self.bedvar.get())
-        example = {'locality': loc, 'type': ptype, 'bedrooms': nbeds}
+        area = int(self.warea.get())
+        example = {'locality': loc, 'type': ptype, 'bedrooms': nbeds, 'area': area}
         price = self.model.predict(example)
         self.pricevar.set(f'€{int(price):,}')
 
@@ -114,9 +125,10 @@ if __name__=='__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--show_plots', action='store_true')
+    parser.add_argument('--csv', help='csv to read properties', default='remax_properties.csv')
     args = parser.parse_args()
 
-    fn = 'dhalia_properties.csv'
+    fn = args.csv
 
     model = ANOVA(fn)
     
