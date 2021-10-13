@@ -13,7 +13,7 @@ headers = {"User-Agent": "Mozilla/5.0 (X11; CrOS x86_64 12871.102.0) AppleWebKit
 s = requests.Session()
 
 out_csv = 'remax_properties.csv'
-attributes = 'price region locality type bedrooms bathrooms area'.split()
+attributes = 'price region locality type bedrooms bathrooms area rooms'.split()
 with open(out_csv, 'w+') as f:
     writer = csv.writer(f)
     writer.writerow(attributes)
@@ -25,6 +25,7 @@ data = json.loads(content[content.find('{'):content.rfind('}')+1])['data']
 
 df = {k: [] for k in attributes}
 for prop in data['Properties']:
+    print(prop['Coordinates'], end='\r')
 
     if prop['TransactionType'] != 'For Sale' or prop['HidePriceFromWeb']:
             continue

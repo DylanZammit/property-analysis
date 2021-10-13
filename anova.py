@@ -108,6 +108,7 @@ class GUI:
             formvar = StringVar(window)
             wform = ttk.Combobox(window, textvariable=formvar, values=list(forms))
             wform.place(relx=0.6, rely=0.3, anchor='nw')
+            self.wform = wform 
 
         self.model = model
         self.bedvar = bedvar
@@ -115,7 +116,6 @@ class GUI:
         self.typevar = typevar
         self.pricevar = pricevar
         self.warea = warea
-        self.wform = wform 
 
         mainloop()
 
@@ -136,7 +136,7 @@ class GUI:
 
 if __name__=='__main__':
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Property price prediction using ANOVA.')
     parser.add_argument('--show_plots', action='store_true')
     parser.add_argument('--csv', help='csv to read properties', default='remax_properties.csv')
     args = parser.parse_args()
