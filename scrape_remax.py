@@ -14,9 +14,6 @@ s = requests.Session()
 
 out_csv = 'remax_properties.csv'
 attributes = 'price region locality type bedrooms bathrooms area rooms'.split()
-with open(out_csv, 'w+') as f:
-    writer = csv.writer(f)
-    writer.writerow(attributes)
 
 print('getting request...')
 r = s.get(url, headers=headers)
@@ -37,6 +34,10 @@ for prop in data['Properties']:
     df['bathrooms'].append(prop['TotalBathrooms'])
     df['rooms'].append(prop['TotalRooms'])
     df['area'].append(prop['TotalSqm'])
+
+with open(out_csv, 'w+') as f:
+    writer = csv.writer(f)
+    writer.writerow(attributes)
 
 df = pd.DataFrame(df)
 df.to_csv(out_csv, index=False, mode='a', header=False)
