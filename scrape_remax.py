@@ -34,7 +34,6 @@ df = {k: [] for k in attributes}
 n_rejected = 0
 for prop in data['Properties']:
     if args.debug: pdb.set_trace()
-    print(prop['Coordinates'], end='\r')
     if prop['TransactionType'] != 'For Sale' or prop['HidePriceFromWeb']: continue
 
     intarea = prop['TotalIntArea']
@@ -71,12 +70,15 @@ for prop in data['Properties']:
 
     df['webpage'].append(os.path.join(property_url_base, prop['MLS']))
 
-with open(out_csv, 'w+') as f:
-    writer = csv.writer(f)
-    writer.writerow(attributes)
+if not args.debug:
+    with open(out_csv, 'w+') as f:
+        writer = csv.writer(f)
+        writer.writerow(attributes)
 
-df = pd.DataFrame(df)
-df.to_csv(out_csv, index=False, mode='a', header=False)
-print('='*30)
-print(f'Rejected {n_rejected} properties.')
-print(f'Saved {len(df)} properties to {out_csv} successfully!')
+    df = pd.DataFrame(df)
+    df.to_csv(out_csv, index=False, mode='a', header=False)
+    print('='*30)
+    print(f'Rejected {n_rejected} properties.')
+    print(f'Saved {len(df)} properties to {out_csv} successfully!')
+else:
+    print(f'No saving in debug mode. {n_rejected} rejected.')
