@@ -1,0 +1,98 @@
+.button {
+    background-color: white;
+    color: black;
+    border: 2px solid #008CBA;
+    margin-top: 10px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    transition-duration: 0.4s
+}
+
+.main-link{
+    color:inherit;
+    text-decoration:none;
+    overflow: visible;
+}
+
+.button-main-1{
+    font-size: 30px;
+    background-color: white;
+    color: black;
+    border: 4px solid #008CBA;
+    margin-left: 20%;
+    margin-right: 15px;
+    padding: 50px 72px;
+    border-radius: 8px;
+    transition-duration: 0.4s;
+    width: 25%;
+    float: left;
+}
+
+.button-main-2{
+    font-size: 30px;
+    background-color: white;
+    color: black;
+    border: 4px solid #008CBA;
+    margin-left: 15px;
+    margin-right: 20%;
+    padding: 50px 72px;
+    border-radius: 8px;
+    transition-duration: 0.4s;
+    width: 25%;
+    float: left;
+}
+
+.button-main-1:hover {
+    background-color: #008CBA; /* Blue*/
+    color: white;
+}
+
+.button-main-2:hover {
+    background-color: #008CBA; /* Blue*/
+    color: white;
+}
+
+.button:hover {
+    background-color: #008CBA; /* Blue*/
+    color: white;
+}
+
+.fade-in-text {
+  display: inline-block;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 40px;
+  color: #808080;
+  animation: fadeIn linear 4s;
+  -webkit-animation: fadeIn linear 4s;
+  -moz-animation: fadeIn linear 4s;
+  -o-animation: fadeIn linear 4s;
+  -ms-animation: fadeIn linear 4s;
+  padding: 150px;
+  padding-top: 100px;
+  padding-bottom: 80px
+}
+
+@keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
+@-moz-keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
+@-webkit-keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
+@-o-keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
+@-ms-keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
