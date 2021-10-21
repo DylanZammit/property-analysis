@@ -10,6 +10,9 @@ import numpy as np
 
 class ANOVA:
     def __init__(self, fn):
+        '''
+        TODO: apply PCA on data first
+        '''
         df = pd.read_csv(fn)
         df = df[df.type != 'Garage']
         df = df.dropna()
@@ -20,11 +23,85 @@ class ANOVA:
         self.df = df
         self.fit()
 
+    def PCA(self, cutoff=0.99):
+        covariates = 'bedrooms area int_area ext_area'.split()
+        data = self.df[covariates]
+        data = data.sub(data.mean()).div(data.std())
+        vcv = data.cov()
+        val, vec = np.linalg.eigh(vcv)
+        val = [v/sum(val) for v in val]
+        
+        feature = vec[:,2:] # choose 2 appropraitely!!
+
+        data1 = feat.T@data.T
+
+        return data1
+
+    def get_model_eqn(self, categ, covar):
+
+        if(len(categ)>0 and len(covar)>0):
+            return 'price ~ ' + '+'.join(categ)+'+'+'+'.join(covar)
+        elif(len(covar)==0 and len(categ) > 0):
+            return 'price ~ ' + '+'.join(categ)
+        elif(len(covar) > 0 and len(categ) == 0):
+            return 'price ~ ' + '+'.join(covar)
+        else: 
+            return 0
+
+    def perform_analysis_dyn(self, categ=['locality', 'type'], covar=['area'], suppress_output=False):
+        categ = [f'C({c})' for c in categ]
+
+        model_eqn = self.get_model_eqn(categ, covar)
+
+        if(model_eqn==0): 
+            print('No significant variable')
+            return
+
+        #apply anova
+        lm = ols(model_eqn, data=self.df).fit()
+        table = sm.stats.anova_lm(lm, typ=2)
+        p_vals = table['PR(>F)']
+
+        print(lm.summary())
+        print(table)
+
+        #value and index of largest p value
+        max_p = np.max(p_vals)
+        argmax_p = np.argmax(p_vals)
+
+        if(max_p>0.05):
+
+            #removes insignificant variables with largest p val
+            if(argmax_p<len(categ)):
+                del categ[argmax_p]
+            else:
+                del covar[argmax_p-len(categ)]
+
+            #performs analysis without the insignificant variable
+            self.perform_analysis_dyn(self.df, categ, covar)
+        else:
+            #all remaining variables significant, so output info
+            coefficients = lm.params
+            r = lm.rsquared_adj
+            adj_r = lm.rsquared
+            if not suppress_output:
+                print('Adjusted R-Squared: ' + str(adj_r))
+                print(coefficients)
+                print(p_vals)
+            self.lm = lm
+
     def fit(self):
-        model = 'price ~ C(locality) + C(type) + bedrooms + area'
-        if self.form: model += ' + C(form)'
-        lm = ols(model, self.df).fit()
-        self.lm = lm
+        categ = ['locality', 'type']
+        covar = ['bedrooms', 'area']
+
+        categ = ['locality', 'type', 'region']
+        covar = ['bedrooms', 'area', 'int_area', 'ext_area']
+
+        if self.form: categ.append('form')
+        self.perform_analysis_dyn(categ, covar)
+        #lm = ols(model, self.df).fit()
+        #self.lm = lm
+
 
     def plot_by_type(self, minct=10):
         plt.figure()
