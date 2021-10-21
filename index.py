@@ -25,7 +25,7 @@ def search_prop_url( form, locality):
     return 'https://remax-malta.com/listings?Residential=true&Commercial=false&ForSale=true&ForRent=false&TownIds={}&SelectedPropertyTypes={}&page=1'.format(townid,formid)
 
 ###########################################
-df = pd.read_csv('remax_properties.csv')
+df = pd.read_csv('data/remax_properties.csv')
 
 qtile = 0.99
 qprice = df.price.quantile(qtile)

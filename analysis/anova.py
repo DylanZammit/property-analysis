@@ -9,11 +9,10 @@ from tkinter import ttk
 import numpy as np
 
 class ANOVA:
-    def __init__(self, fn):
+    def __init__(self, df):
         '''
         TODO: apply PCA on data first
         '''
-        df = pd.read_csv(fn)
         df = df[df.type != 'Garage']
         df = df.dropna()
         df.bedrooms = df.bedrooms.astype(int)
@@ -219,8 +218,9 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     fn = args.csv
+    df = pd.read_csv(fn)
 
-    model = ANOVA(fn)
+    model = ANOVA(df)
     
     if args.show_plots:
         model.plot_by_loc()
