@@ -5,6 +5,12 @@
     width: 100%;
 }
 
+.filter-dd {
+    overflow: visible;
+    padding: 8px;
+    clear: both;
+}
+
 .button {
     background-color: white;
     color: black;

@@ -1,6 +1,7 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
 import argparse
+import webbrowser
 import dash
 from dash import html
 from dash import dcc
@@ -10,6 +11,8 @@ import pandas as pd
 
 from app import app
 from apps import analysis, main
+
+wpage = None
 
 intro = 'Do you want to get a quote, or rough estimate of how much your property is worth in the current market in Malta? Or maybe do you want to do an in depth analysis on the current housing market? Press the options below to test out different stuff and try. Enjoy!'
 
@@ -124,6 +127,7 @@ def update_bar_by_type(prop_type):
     Input(component_id='price-by-area', component_property='clickData')
 )
 def search_prop_scatter(data):
+    global wpage
     if data: 
         output = data['points'][0]['customdata']
         output[2] = '€{:,}'.format(output[2])

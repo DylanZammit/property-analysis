@@ -10,9 +10,11 @@ from dash import dcc
 import plotly.express as px
 import pandas as pd
 from dash.dependencies import Input, Output, State
+import os
 
+path = '/home/dylan/git/property-analysis'
 ###########################################
-df = pd.read_csv('remax_properties.csv')
+df = pd.read_csv(os.path.join(path, 'data', 'remax_properties.csv'))
 
 qtile = 0.99
 qprice = df.price.quantile(qtile)
@@ -35,41 +37,41 @@ layout = html.Div([
             html.H2('Filters ', style={'padding': '20px', 'float': 'center','margin': 'auto', 'width': '100%',
                                        'text-align': 'center'}),
         html.Div([
-        html.Div('Locality: ', style={'float': 'left','margin': 'auto', 'width': '20%'}),
+        html.Div('Locality ', style={'float': 'left','margin': 'auto', 'width': '20%'}),
         dcc.Dropdown(id='loc-dd',
                      placeholder='Any',
                      multi=True,
                      options=[
                          {'label': k, 'value': k} for k in np.unique(df.locality)
                      ], style={'float': 'left','margin': 'auto', 'width': '80%'}
-                    )], style={'overflow': 'visible', 'padding': '8px'}),
+                    )], className='filter-dd'),
         html.Div([
-        html.Div('Region: ', style={'float': 'left','margin': 'auto', 'width': '20%'}),
+        html.Div('Region ', style={'float': 'left','margin': 'auto', 'width': '20%'}),
         dcc.Dropdown(id='region-dd',
                      placeholder='Any',
                      multi=True,
                      options=[
                          {'label': k, 'value': k} for k in np.unique(df.region)
                      ], style={'float': 'left','margin': 'auto', 'width': '80%'}
-                    )], style={'overflow': 'visible', 'padding': '8px'}),
+                    )], className='filter-dd'),
         html.Div([
-        html.Div('# Bedrooms: ', style={'float': 'left','margin': 'auto', 'width': '20%'}),
+        html.Div('# Bedrooms ', style={'float': 'left','margin': 'auto', 'width': '20%'}),
         dcc.Dropdown(id='beds-dd',
                      placeholder='Any',
                      multi=True,
                      options=[
                          {'label': k, 'value': k} for k in np.unique(df.bedrooms)
                      ], style={'float': 'left','margin': 'auto', 'width': '80%'}
-                    )], style={'overflow': 'visible', 'padding': '8px'}),
+                    )], className='filter-dd'),
         html.Div([
-        html.Div('Property Type: ', style={'float': 'left','margin': 'auto', 'width': '20%'}),
+        html.Div('Property Type ', style={'float': 'left','margin': 'auto', 'width': '20%'}),
         dcc.Dropdown(id='scatter-type-dd',
                      placeholder='Any',
                      multi=True, 
                      options=[
                          {'label': k, 'value': k} for k in np.unique(df.type)
                      ], style={'float': 'left','margin': 'auto', 'width': '80%'}
-                    )], style={'overflow': 'visible', 'padding': '8px'}),
+                    )], className='filter-dd'),
         ], className='filters', style={'float': 'left','margin': 'auto', 'width': '40%'}),
         html.Table([
             html.Tr([html.Td('Locality'), html.Td(id='locality-output')]),
