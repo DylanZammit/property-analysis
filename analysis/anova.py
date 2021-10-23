@@ -7,6 +7,7 @@ import argparse
 from tkinter import *
 from tkinter import ttk
 import numpy as np
+import itertools
 
 class ANOVA:
     def __init__(self, df):
@@ -36,21 +37,18 @@ class ANOVA:
 
         return data1
 
-    def get_model_eqn(self, categ, covar):
+    def get_model_eqn(self, features):
+        return 'price ~ ' + '+'.join(features)
 
-        if(len(categ)>0 and len(covar)>0):
-            return 'price ~ ' + '+'.join(categ)+'+'+'+'.join(covar)
-        elif(len(covar)==0 and len(categ) > 0):
-            return 'price ~ ' + '+'.join(categ)
-        elif(len(covar) > 0 and len(categ) == 0):
-            return 'price ~ ' + '+'.join(covar)
-        else: 
-            return 0
-
-    def perform_analysis_dyn(self, categ=['locality', 'type'], covar=['area'], suppress_output=False):
+    def perform_analysis_dyn(self, categ=['locality', 'type'], covar=['area', 'bedrooms'], cross=False, suppress_output=False):
         categ = [f'C({c})' for c in categ]
+        features = categ+covar
+        if cross: features += ['*'.join(pair) for pair in itertools.combinations(features, 2)]
+        self.learn_anova(features, suppress_output)
 
-        model_eqn = self.get_model_eqn(categ, covar)
+    def learn_anova(self, features=['area', 'C(locality)'], suppress_output=False):
+
+        model_eqn = self.get_model_eqn(features)
 
         if(model_eqn==0): 
             print('No significant variable')
@@ -77,7 +75,7 @@ class ANOVA:
                 del covar[argmax_p-len(categ)]
 
             #performs analysis without the insignificant variable
-            self.perform_analysis_dyn(self.df, categ, covar)
+            self.learn_anova(features, suppress_output)
         else:
             #all remaining variables significant, so output info
             coefficients = lm.params
@@ -93,8 +91,8 @@ class ANOVA:
         categ = ['locality', 'type']
         covar = ['bedrooms', 'area']
 
-        categ = ['locality', 'type', 'region']
-        covar = ['bedrooms', 'area', 'int_area', 'ext_area']
+        #categ = ['locality', 'type', 'region']
+        #covar = ['bedrooms', 'area', 'int_area', 'ext_area']
 
         if self.form: categ.append('form')
         self.perform_analysis_dyn(categ, covar)
@@ -214,7 +212,7 @@ if __name__=='__main__':
 
     parser = argparse.ArgumentParser(description='Property price prediction using ANOVA.')
     parser.add_argument('--show_plots', action='store_true')
-    parser.add_argument('--csv', help='csv to read properties', default='remax_properties.csv')
+    parser.add_argument('--csv', help='csv to read properties', default='/home/dylan/git/property-analysis/data/remax_properties.csv')
     args = parser.parse_args()
 
     fn = args.csv

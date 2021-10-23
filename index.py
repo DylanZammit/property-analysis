@@ -10,7 +10,8 @@ import plotly.express as px
 import pandas as pd
 
 from app import app
-from apps import analysis, main
+from analysis.anova import ANOVA
+from apps import analysis, main, anova
 
 wpage = None
 
@@ -18,6 +19,7 @@ intro = 'Do you want to get a quote, or rough estimate of how much your property
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
+    html.Div('Property Analysis', id='header'),
     main.layout,
     html.Div(id='page-content')
 ])
@@ -44,16 +46,17 @@ df = df[df.type.isin(types)]
 df = df[(df.price<qprice)&(df.int_area<qintarea)&(df.area<qarea)] # too much?
 ###########################################
 townmap = df.groupby('locality').last()['locality_id']
+model = ANOVA(df)
 
 @app.callback(
     Output('page-content', 'children'),
     [Input('url', 'pathname')]
 )
 def button_click(pathname):
-    if pathname=='/BBB':
+    if pathname=='/analysis':
         return analysis.layout
-    else:
-        return None
+    elif pathname=='/quote':
+        return anova.layout
 
 @app.callback(
     Output(component_id='price-by-area', component_property='figure'),
@@ -72,7 +75,7 @@ def update_scatter_by_type(loc, region, beds, form):
                                                                         'bedrooms', 'bathrooms', 'area',
                                                                         'int_area', 'ext_area', 'type',
                                                                         'webpage'],
-                             height=800,trendline='ols', trendline_color_override='orange')
+                             height=900,trendline='ols', trendline_color_override='orange')
     fig_scatter.update_layout(transition_duration=500, clickmode='event+select')
     return fig_scatter
 
@@ -106,7 +109,8 @@ def update_bar_by_type(prop_type):
     fdf = fdf.loc[locs]
     fdf = fdf[['price']]
     fdf = fdf.sort_values('price')
-    fig_bar = px.bar(fdf, x=fdf.index, y='price', labels={'price': 'Price EUR'}, height=500)
+    fig_bar = px.bar(fdf, x=fdf.index, y='price', labels={'price': 'Price EUR'}, height=500,
+                     color_continuous_scale=px.colors.sequential.Bluered, color='price')
     fig_bar.update_layout(transition_duration=500, clickmode='event+select')
 
     return fig_bar
@@ -116,9 +120,9 @@ def update_bar_by_type(prop_type):
     Output(component_id='locality-output', component_property='children'),
     Output(component_id='region-output', component_property='children'),
     Output(component_id='price-output', component_property='children'),
+    Output(component_id='rooms-output', component_property='children'),
     Output(component_id='beds-output', component_property='children'),
     Output(component_id='baths-output', component_property='children'),
-    Output(component_id='rooms-output', component_property='children'),
     Output(component_id='area-output', component_property='children'),
     Output(component_id='intarea-output', component_property='children'),
     Output(component_id='extarea-output', component_property='children'),
@@ -144,6 +148,33 @@ def button_click(data):
     if data and wpage:
         webbrowser.open_new_tab(wpage)
     return None
+
+@app.callback(
+    Output('quote-output', 'children'),
+    Input('area-quote-slider', 'value'),
+    Input('beds-quote-slider', 'value'),
+    Input('loc-quote-dd', 'value'),
+    Input('type-quote-dd', 'value')
+)
+def quote_button(area, beds, loc, type):
+    if area and beds and loc and type:
+        X = {'area': area, 'bedrooms': beds, 'locality': loc, 'type': type}
+        out = model.predict(X)
+        return f'Estimate is €{int(out//1000*1000):,}'
+    return ''
+
+@app.callback(
+    Output('beds-quote-output', 'children'),
+    [Input('beds-quote-slider', 'value')])
+def update_beds_quote(value):
+    return f'{value} bedroom'
+
+@app.callback(
+    Output('area-quote-output', 'children'),
+    [Input('area-quote-slider', 'value')])
+def update_area_quote(value):
+    return f'Total area = {value}m\u00b2'
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--no-debug', action='store_true')

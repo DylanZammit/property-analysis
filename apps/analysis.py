@@ -37,6 +37,7 @@ layout = html.Div([
             html.H2('Filters ', style={'padding': '20px', 'float': 'center','margin': 'auto', 'width': '100%',
                                        'text-align': 'center'}),
         html.Div([
+        html.Div([
         html.Div('Locality ', style={'float': 'left','margin': 'auto', 'width': '20%'}),
         dcc.Dropdown(id='loc-dd',
                      placeholder='Any',
@@ -72,9 +73,10 @@ layout = html.Div([
                          {'label': k, 'value': k} for k in np.unique(df.type)
                      ], style={'float': 'left','margin': 'auto', 'width': '80%'}
                     )], className='filter-dd'),
-        ], className='filters', style={'float': 'left','margin': 'auto', 'width': '40%'}),
+        ], className='filters'),
         html.Table([
-            html.Tr([html.Td('Locality'), html.Td(id='locality-output')]),
+            html.Thead(html.Td('Property Information', colSpan='2')),
+            html.Tr([html.Td('Locality', style={'width': '30%'}), html.Td(id='locality-output')]),
             html.Tr([html.Td('Region'), html.Td(id='region-output')]),
             html.Tr([html.Td('Price (EUR)'), html.Td(id='price-output')]),
             html.Tr([html.Td('# Rooms'), html.Td(id='rooms-output')]),
@@ -84,11 +86,11 @@ layout = html.Div([
             html.Tr([html.Td(['Interior Area (m', html.Sup(2), ')']), html.Td(id='intarea-output')]),
             html.Tr([html.Td(['Exterior Area (m', html.Sup(2), ')']), html.Td(id='extarea-output')]),
             html.Tr([html.Td('Property Type'), html.Td(id='type-output')]),
-        ], style={'padding-top': '30px'}),
+        ]),
         html.Button('View Property', className='button', id='prop-link'),
+        ], id='scatter-options')
         #dcc.Link(html.Button('View Property', style={'margin-top': '10px'}), id='prop-link', style={'margin-top': '10px'}, href=''),
-    ], style={'overflow': 'hidden'}),
-    #html.Hr(),
+    ], id='scatter-area', style={'overflow': 'hidden'}),
     html.Div([
     dcc.Dropdown(id='type-dd',
                  multi=True,
@@ -98,7 +100,7 @@ layout = html.Div([
                  ],
                  value=['Apartment']
                 ),
-        dcc.Graph(id='bar-by-type', config={'displayModeBar': False})]),
+        dcc.Graph(id='bar-by-type', config={'displayModeBar': False})], id='bar-area'),
     html.Div(id='hidden-div', style={'display':'none'}),
     html.Div(id='hidden-div2', style={'display':'none'}),
 ])
