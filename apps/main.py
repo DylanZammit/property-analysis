@@ -13,5 +13,7 @@ layout = html.Div([
     html.Div(intro, className='fade-in-text'),
     html.Div([
     dcc.Link(html.Button('Get Quote', className='button-main-1'), href='/quote', className='main-link'),
-    dcc.Link(html.Button('Pro perty', className='button-main-2'), href='/analysis', className='main-link')],
-        id='main-buttons-div')], id='main-area')
+    dcc.Link(html.Button('View Properties', className='button-main-2'), href='/analysis', className='main-link')],
+        id='main-buttons-div'),
+    html.Div(id='scroll-down'),
+], id='main-area')

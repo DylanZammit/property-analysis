@@ -19,6 +19,7 @@ intro = 'Do you want to get a quote, or rough estimate of how much your property
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
+    #html.Script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"),
     html.Div('Property Analysis', id='header'),
     main.layout,
     html.Div(id='page-content')
@@ -50,13 +51,15 @@ model = ANOVA(df)
 
 @app.callback(
     Output('page-content', 'children'),
-    [Input('url', 'pathname')]
+    Output('scroll-down', 'children'),
+    Input('url', 'pathname')
 )
 def button_click(pathname):
     if pathname=='/analysis':
-        return analysis.layout
+        return analysis.layout, 'Scroll Down'
     elif pathname=='/quote':
-        return anova.layout
+        return anova.layout, 'Scroll Down'
+    return None, ''
 
 @app.callback(
     Output(component_id='price-by-area', component_property='figure'),
@@ -132,7 +135,7 @@ def update_bar_by_type(prop_type):
 )
 def search_prop_scatter(data):
     global wpage
-    if data: 
+    if data and 'customdata' in data['points'][0]: 
         output = data['points'][0]['customdata']
         output[2] = '€{:,}'.format(output[2])
         wpage = output[-1]
