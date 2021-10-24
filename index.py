@@ -22,7 +22,8 @@ app.layout = html.Div([
     #html.Script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"),
     html.Div('Property Analysis', id='header'),
     main.layout,
-    html.Div(id='page-content')
+    html.Div(id='page-content'),
+    html.Div(id='HIDDEN', style={'display': 'none'})
 ], id='backest')
 
 def search_prop_url( form, locality):
@@ -49,9 +50,22 @@ df = df[(df.price<qprice)&(df.int_area<qintarea)&(df.area<qarea)] # too much?
 townmap = df.groupby('locality').last()['locality_id']
 model = ANOVA(df)
 
+#@app.callback(Output('HIDDEN', 'children'),
+#              [Input('url', 'pathname')])
+#def display_page(pathname):
+#    import pdb; pdb.set_trace()
+#    return None
+#    #if pathname == '/page-1':
+#    #    return page_1_layout
+#    #elif pathname == '/page-2':
+#    #    return page_2_layout
+#    #else:
+#    #    return index_page
+
 @app.callback(
     Output('page-content', 'children'),
     Output('scroll-container', 'style'),
+    #Input('main-quote-link', 'pathname'),
     Input('main-quote-btn', 'n_clicks'),
     Input('main-analysis-btn', 'n_clicks')
 )
@@ -69,6 +83,11 @@ def main_button_click(btn1, btn2):
         return analysis.layout, visible
     elif button == 'quote':
         return anova.layout, visible
+
+#@app.callback(
+#    Output('scroll-container', 'style'),
+#    Input('main-quote-link', 'pathname'),
+#)
 
 @app.callback(
     Output(component_id='price-by-area', component_property='figure'),
@@ -147,6 +166,10 @@ def search_prop_scatter(data):
     if data and 'customdata' in data['points'][0]: 
         output = data['points'][0]['customdata']
         output[2] = '€{:,}'.format(output[2])
+        for i in range(3, 6):
+            output[i] = ['{}'.format(output[i]), ' rooms']
+        for i in range(6, 9):
+            output[i] = ['{}m'.format(output[i]), html.Sup(2)]
         wpage = output[-1]
         return tuple(output[:-1])
     return tuple(['']*10)

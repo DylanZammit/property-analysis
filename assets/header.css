@@ -1,15 +1,39 @@
 #backest {
-    background-color: #008CBA;
+    background-color: #ADD8E6;
     height: fit-content;
     overflow: hidden;
 }
 
+#bar-graph {
+    padding: 10px;
+}
+
+#quote-image {
+    width: 40%;
+    float: left;
+    margin-left: 4%;
+    border-radius: 10%;
+}
+
+#main-banner {
+    width: 100%;
+}
+
+#quote-filter-area{
+    width: 40%;
+    float: left;
+    padding: 2%;
+}
 
 #page-content {
     top: 100px;
     float: left;
     width: 100%;
     height: fit-content;
+}
+
+#img-filters-quote {
+    overflow: hidden;
 }
 
 #quote-output{
@@ -132,7 +156,7 @@ table tr {
     #padding: 25px;
     clear: both;
 
-    width: 80%;
+    width: 100%;
     margin-left: 10%;
     margin-right: 10%;
     #margin-top: 5%;

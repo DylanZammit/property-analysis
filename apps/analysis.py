@@ -40,7 +40,8 @@ layout = html.Div([
         html.Div([
         html.Div('Locality ', style={'float': 'left','margin': 'auto', 'width': '20%'}),
         dcc.Dropdown(id='loc-dd',
-                     placeholder='Any',
+                     #placeholder='Any',
+                     value=['Sliema'],
                      multi=True,
                      options=[
                          {'label': k, 'value': k} for k in np.unique(df.locality)
@@ -78,13 +79,13 @@ layout = html.Div([
             html.Thead(html.Td('Property Information', colSpan='2')),
             html.Tr([html.Td('Locality', style={'width': '30%'}), html.Td(id='locality-output')]),
             html.Tr([html.Td('Region'), html.Td(id='region-output')]),
-            html.Tr([html.Td('Price (EUR)'), html.Td(id='price-output')]),
+            html.Tr([html.Td('Price'), html.Td(id='price-output')]),
             html.Tr([html.Td('# Rooms'), html.Td(id='rooms-output')]),
             html.Tr([html.Td('# Bedrooms'), html.Td(id='beds-output')]),
             html.Tr([html.Td('# Bathrooms'), html.Td(id='baths-output')]),
-            html.Tr([html.Td(['Area (m', html.Sup(2), ')']), html.Td(id='area-output')]),
-            html.Tr([html.Td(['Interior Area (m', html.Sup(2), ')']), html.Td(id='intarea-output')]),
-            html.Tr([html.Td(['Exterior Area (m', html.Sup(2), ')']), html.Td(id='extarea-output')]),
+            html.Tr([html.Td('Total Area'), html.Td(id='area-output')]),
+            html.Tr([html.Td('Interior Area'), html.Td(id='intarea-output')]),
+            html.Tr([html.Td('Exterior Area'), html.Td(id='extarea-output')]),
             html.Tr([html.Td('Property Type'), html.Td(id='type-output')]),
         ]),
         html.Button('View Property', className='button', id='prop-link'),
@@ -100,7 +101,7 @@ layout = html.Div([
                  ],
                  value=['Apartment']
                 ),
-        dcc.Graph(id='bar-by-type', config={'displayModeBar': False})], id='bar-area'),
+    html.Div(dcc.Graph(id='bar-by-type', config={'displayModeBar': False}), id='bar-graph')], id='bar-area'),
     html.Div(id='hidden-div', style={'display':'none'}),
     html.Div(id='hidden-div2', style={'display':'none'}),
 ])

@@ -33,6 +33,9 @@ df = df[(df.price<qprice)&(df.int_area<qintarea)&(df.area<qarea)] # too much?
 layout = html.Div([
         html.Div('Estimate Property Price', id='quote-title'),
         html.Div([
+        html.Img(src='assets/imdina.JPG', id='quote-image'),
+        html.Div([
+        html.Div([
             dcc.Dropdown(id='loc-quote-dd',
                          #placeholder='Choose locality',
                          value='Attard',
@@ -75,6 +78,7 @@ layout = html.Div([
                        included=False),
             html.Div(id='area-quote-output', className='slider-displayer')
         ], className='slider'),
+        ], id='quote-filter-area')], id='img-filters-quote'),
         #html.Button('Get Quote', className='button', id='quote-button'),
         html.Div(id='quote-output'),
 ], id='quote-area')
