@@ -23,7 +23,7 @@ app.layout = html.Div([
     html.Div('Property Analysis', id='header'),
     main.layout,
     html.Div(id='page-content')
-])
+], id='backest')
 
 def search_prop_url( form, locality):
     townid = townmap[locality]
@@ -51,15 +51,24 @@ model = ANOVA(df)
 
 @app.callback(
     Output('page-content', 'children'),
-    Output('scroll-down', 'children'),
-    Input('url', 'pathname')
+    Output('scroll-container', 'style'),
+    Input('main-quote-btn', 'n_clicks'),
+    Input('main-analysis-btn', 'n_clicks')
 )
-def button_click(pathname):
-    if pathname=='/analysis':
-        return analysis.layout, 'Scroll Down'
-    elif pathname=='/quote':
-        return anova.layout, 'Scroll Down'
-    return None, ''
+def main_button_click(btn1, btn2):
+    visible = {'visibility': 'unset'}
+    hidden = {'visibility': 'hidden'}
+
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        return None, hidden
+
+    button = ctx.triggered[0]['prop_id'].split('.')[0].split('-')[1]
+
+    if button == 'analysis':
+        return analysis.layout, visible
+    elif button == 'quote':
+        return anova.layout, visible
 
 @app.callback(
     Output(component_id='price-by-area', component_property='figure'),

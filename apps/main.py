@@ -12,8 +12,14 @@ intro = 'Do you want to get a quote, or rough estimate of how much your property
 layout = html.Div([
     html.Div(intro, className='fade-in-text'),
     html.Div([
-    dcc.Link(html.Button('Get Quote', className='button-main-1'), href='/quote', className='main-link'),
-    dcc.Link(html.Button('View Properties', className='button-main-2'), href='/analysis', className='main-link')],
-        id='main-buttons-div'),
-    html.Div(id='scroll-down'),
+    html.Button('Get Quote', id='main-quote-btn'),
+    html.Button('View Properties', id='main-analysis-btn')
+    ],id='main-buttons-div'),
+    html.Div(html.Img(src='assets/scroll-down.png', id='scroll-down'), id='scroll-container'),
 ], id='main-area')
+
+
+
+
+    #dcc.Link(html.Button('Get Quote', className='button-main-1'), href='/quote', className='main-link'),
+    #dcc.Link(html.Button('View Properties', className='button-main-2'), href='/analysis', className='main-link')],
