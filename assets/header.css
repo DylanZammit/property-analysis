@@ -63,6 +63,7 @@
 }
 
 #header{
+    z-index: 1;
     position: fixed;
     text-align: center;
     font-size: 50px;
@@ -125,10 +126,12 @@ table tr {
     width: 80%;
     margin-left: 10%;
     margin-right: 10%;
+    #margin-top: 5%;
+    padding-top: 25px;
 }
 
 .slider-displayer {
-    padding-top: 5px;
+    padding-top: 15px;
     padding-left: 10px;
     font-size: 20px;
     font-family: Arial, Helvetica, sans-serif;
@@ -144,6 +147,7 @@ table tr {
     width: 80%;
     margin-left: 10%;
     margin-right: 10%;
+    #margin-top: 5%;
     #font-size: 15px;
     #padding-top: 5px;
     #padding-left: 10px;
