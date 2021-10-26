@@ -1,3 +1,8 @@
+#malta-graph {
+    padding: 100px;
+    height: 800px
+}
+
 #backest {
     background-color: #ADD8E6;
     height: fit-content;
@@ -26,6 +31,7 @@
 }
 
 #page-content {
+    /*visibility: hidden;*/
     top: 100px;
     float: left;
     width: 100%;

@@ -11,11 +11,9 @@ import pandas as pd
 
 from app import app
 from analysis.anova import ANOVA
-from apps import analysis, main, anova
+from apps import analysis, main, anova, regression, malta
 
 wpage = None
-
-intro = 'Do you want to get a quote, or rough estimate of how much your property is worth in the current market in Malta? Or maybe do you want to do an in depth analysis on the current housing market? Press the options below to test out different stuff and try. Enjoy!'
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -23,7 +21,7 @@ app.layout = html.Div([
     html.Div('Property Analysis', id='header'),
     main.layout,
     html.Div(id='page-content'),
-    html.Div(id='HIDDEN', style={'display': 'none'})
+    html.Div(id='HIDDEN', style={'visibility': 'hidden'})
 ], id='backest')
 
 def search_prop_url( form, locality):
@@ -63,6 +61,17 @@ model = ANOVA(df)
 #    #    return index_page
 
 @app.callback(
+    Output('analysis-content', 'children'),
+    Input('analysis-tabs', 'value')
+)
+def render_analysis_content(tab):
+    if tab == 'malta-tab':
+        return malta.layout
+    elif tab == 'regression-tab':
+        return regression.layout
+
+@app.callback(
+    #Output('page-content', 'style'),
     Output('page-content', 'children'),
     Output('scroll-container', 'style'),
     #Input('main-quote-link', 'pathname'),

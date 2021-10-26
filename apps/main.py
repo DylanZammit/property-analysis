@@ -13,8 +13,8 @@ layout = html.Div([
     html.Div(intro, className='fade-in-text'),
     #html.Img(src='assets/kampanja.JPG', id='main-banner'),
     html.Div([
-    html.A(html.Button('Estimate Price', id='main-quote-btn'), href='#page-content', id='main-quote-link'),
-    html.A(html.Button('View Properties', id='main-analysis-btn'), href='#page-content')
+    html.A(html.Button('Estimate Price', id='main-quote-btn'), href='#HIDDEN', id='main-quote-link'),
+    html.A(html.Button('View Properties', id='main-analysis-btn'), href='#HIDDEN')
     ],id='main-buttons-div'),
     html.A(html.Img(src='assets/scroll-down.png', id='scroll-down'), id='scroll-container', href='#page-content'),
 ], id='main-area')
