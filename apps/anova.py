@@ -18,7 +18,7 @@ path = '/home/dylan/git/property-analysis'
 layout = html.Div([
         html.Div('Estimate Property Price', id='quote-title'),
         html.Div([
-        html.Img(src='assets/imdina.JPG', id='quote-image'),
+        html.Div(html.Img(src='assets/imdina.JPG', id='quote-image'), id='quote-image-container'),
         html.Div([
         html.Div([
             dcc.Dropdown(id='loc-quote-dd',

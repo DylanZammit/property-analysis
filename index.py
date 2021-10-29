@@ -1,5 +1,6 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
+import os
 import argparse
 import webbrowser
 import dash
@@ -13,7 +14,7 @@ from app import app
 from analysis.anova import ANOVA
 from apps import analysis, main, anova, regression, malta
 import dash_daq as daq
-from read_data import df
+from read_data import df, region2loc, loc2region, region2img
 
 wpage = None
 
@@ -25,7 +26,7 @@ app.layout = html.Div([
         #    on=True,
         #    id='asd')
     ]),
-    html.Div(html.Img(src='assets/island.jpg'), id='main-img', className='box-shadow'),
+    html.Div(html.Img(src='assets/island.jpg', id='main-img-really'), id='main-img', className='box-shadow'),
     main.layout,
     html.Div(id='page-content'),
     html.Div(id='HIDDEN', style={'visibility': 'hidden'})
@@ -177,17 +178,22 @@ def button_click(data):
 
 @app.callback(
     Output('quote-output', 'children'),
+    Output('quote-image-container', 'children'),
     Input('area-quote-slider', 'value'),
     Input('beds-quote-slider', 'value'),
     Input('loc-quote-dd', 'value'),
     Input('type-quote-dd', 'value')
 )
 def quote_button(area, beds, loc, type):
+    global prev_reg
+
+    img_out = html.Img(id='quote-image', src=os.path.join('assets', region2img[loc2region[loc]]))
     if area and beds and loc and type:
         X = {'area': area, 'bedrooms': beds, 'locality': loc, 'type': type}
         out = model.predict(X)
-        return f'Estimate is €{int(out//1000*1000):,}'
-    return ''
+
+        return f'Estimate is €{int(out//1000*1000):,}', img_out
+    return '', img_out
 
 @app.callback(
     Output('beds-quote-output', 'children'),
