@@ -12,13 +12,20 @@ import pandas as pd
 from app import app
 from analysis.anova import ANOVA
 from apps import analysis, main, anova, regression, malta
+import dash_daq as daq
+from read_data import df
 
 wpage = None
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    #html.Script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"),
-    html.Div('Property Analysis', id='header'),
+    html.Div(id='header', children=[
+        html.Div('Malta Properties', id='title'),
+        #daq.BooleanSwitch(
+        #    on=True,
+        #    id='asd')
+    ]),
+    html.Div(html.Img(src='assets/island.jpg'), id='main-img', className='box-shadow'),
     main.layout,
     html.Div(id='page-content'),
     html.Div(id='HIDDEN', style={'visibility': 'hidden'})
@@ -29,36 +36,8 @@ def search_prop_url( form, locality):
     formid = 2 or formmap[form]
     return 'https://remax-malta.com/listings?Residential=true&Commercial=false&ForSale=true&ForRent=false&TownIds={}&SelectedPropertyTypes={}&page=1'.format(townid,formid)
 
-###########################################
-df = pd.read_csv('data/remax_properties.csv')
-
-qtile = 0.99
-qprice = df.price.quantile(qtile)
-qintarea = df.int_area.quantile(qtile)
-qarea = df.area.quantile(qtile)
-
-n = len(df)
-
-min_locs_by_type = 20
-B = df.groupby('type').count()
-types = B[B>=min_locs_by_type].dropna().index
-df = df[df.type.isin(types)]
-df = df[(df.price<qprice)&(df.int_area<qintarea)&(df.area<qarea)] # too much?
-###########################################
 townmap = df.groupby('locality').last()['locality_id']
 model = ANOVA(df)
-
-#@app.callback(Output('HIDDEN', 'children'),
-#              [Input('url', 'pathname')])
-#def display_page(pathname):
-#    import pdb; pdb.set_trace()
-#    return None
-#    #if pathname == '/page-1':
-#    #    return page_1_layout
-#    #elif pathname == '/page-2':
-#    #    return page_2_layout
-#    #else:
-#    #    return index_page
 
 @app.callback(
     Output('analysis-content', 'children'),
@@ -100,24 +79,27 @@ def main_button_click(btn1, btn2):
 
 @app.callback(
     Output(component_id='price-by-area', component_property='figure'),
+    Output(component_id='price-range-text', component_property='children'),
     Input(component_id='loc-dd', component_property='value'),
     Input(component_id='region-dd', component_property='value'),
     Input(component_id='beds-dd', component_property='value'),
     Input(component_id='scatter-type-dd', component_property='value'),
+    Input(component_id='price-range', component_property='value'),
 )
-def update_scatter_by_type(loc, region, beds, form):
+def update_scatter_by_type(loc, region, beds, form, price_range):
     fdf = df.copy()
     fdf = fdf if not loc else fdf[fdf.locality.isin(loc)]
     fdf = fdf if not region else fdf[fdf.region.isin(region)]
     fdf = fdf if not beds else fdf[fdf.bedrooms.isin([int(b) for b in beds])]
     fdf = fdf if not form else fdf[fdf.type.isin(form)]
+    fdf = fdf[fdf.price.between(price_range[0], price_range[1])]
     fig_scatter = px.scatter(fdf, x='int_area', y='price', custom_data=['locality', 'region', 'price','rooms',
                                                                         'bedrooms', 'bathrooms', 'area',
                                                                         'int_area', 'ext_area', 'type',
                                                                         'webpage'],
                              height=900,trendline='ols', trendline_color_override='orange')
     fig_scatter.update_layout(transition_duration=500, clickmode='event+select')
-    return fig_scatter
+    return fig_scatter, f'Price is between €{price_range[0]:,} and €{price_range[1]:,}'
 
 @app.callback(
     Output(component_id='hidden-div', component_property='children'),

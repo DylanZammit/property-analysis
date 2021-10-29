@@ -7,7 +7,7 @@ from dash import html
 from dash import dcc
 from dash.dependencies import Input, Output, State
 
-intro = 'Do you want to get a quote, or rough estimate of how much your property is worth in the current market in Malta? Or maybe do you want to do an in depth analysis on the current housing market? Press the options below to test out different stuff and try. Enjoy!'
+intro = 'The perfect place to research properties across Malta & Gozo.'
 
 layout = html.Div([
     html.Div(intro, className='fade-in-text'),

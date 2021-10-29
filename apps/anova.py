@@ -11,24 +11,9 @@ import plotly.express as px
 import pandas as pd
 from dash.dependencies import Input, Output, State
 import os
+from read_data import df
 
 path = '/home/dylan/git/property-analysis'
-###########################################
-df = pd.read_csv(os.path.join(path, 'data', 'remax_properties.csv'))
-
-qtile = 0.99
-qprice = df.price.quantile(qtile)
-qintarea = df.int_area.quantile(qtile)
-qarea = df.area.quantile(qtile)
-
-n = len(df)
-
-min_locs_by_type = 20
-B = df.groupby('type').count()
-types = B[B>=min_locs_by_type].dropna().index
-df = df[df.type.isin(types)]
-df = df[(df.price<qprice)&(df.int_area<qintarea)&(df.area<qarea)] # too much?
-###########################################
 
 layout = html.Div([
         html.Div('Estimate Property Price', id='quote-title'),

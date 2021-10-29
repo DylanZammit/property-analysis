@@ -1,31 +1,20 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
+import dash_daq as daq
 from dash import html
 from dash import dcc
 import pandas as pd
 import numpy as np
 import os
+from read_data import df
 
-###########################################
-#df = pd.read_csv('/home/dylan/git/property-analysis/data/remax_properties.csv')
-#df = pd.read_csv(os.path.join(os.pardir, 'data/remax_properties.csv'))
-df = pd.read_csv(os.path.join('data', 'remax_properties.csv'))
-
-qtile = 0.99
-qprice = df.price.quantile(qtile)
-qintarea = df.int_area.quantile(qtile)
-qarea = df.area.quantile(qtile)
-
-n = len(df)
-
-min_locs_by_type = 20
-B = df.groupby('type').count()
-types = B[B>=min_locs_by_type].dropna().index
-df = df[df.type.isin(types)]
-df = df[(df.price<qprice)&(df.int_area<qintarea)&(df.area<qarea)] # too much?
-###########################################
-
+explanation = '''
+The below graph shows how the price varies when the interior area of the property increases. Click a property (one of
+the blue dots) to view more information. Filter your search based on your interest by choosing from the dropdowns on the
+right. You can also click and drag to zoom on a specific area.
+'''
 layout = html.Div(id='regression-content', children=[
+        #html.Div(explanation, id='reg-exp', className='instructions'),
         dcc.Graph(id='price-by-area', style={'float': 'left','margin': 'auto', 'width':'60%'}, config={'displayModeBar': False}),
         html.Div([
             html.H2('Filters ', style={'padding': '20px', 'float': 'center','margin': 'auto', 'width': '100%',
@@ -68,6 +57,19 @@ layout = html.Div(id='regression-content', children=[
                          {'label': k, 'value': k} for k in np.unique(df.type)
                      ], style={'float': 'left','margin': 'auto', 'width': '80%'}
                     )], className='filter-dd'),
+        html.Div([
+            #html.Div([
+            #    daq.NumericInput(id='min-price', value=0, min=0, size='100px'),
+            #    daq.NumericInput(id='max-price', value=1e7, min=0, size='100px'),
+            #]),
+            dcc.RangeSlider(id='price-range',
+                min = 0, max = df.price.max(), value = [0, df.price.max()], step=5000,
+                tooltip={"placement": "bottom", "always_visible": False},
+                allowCross=False
+                #updatemode='drag'
+                ),
+            html.Div(id='price-range-text'),
+        ], className='filter-dd'),
         ], className='filters'),
         html.Table([
             html.Thead(html.Td('Property Information', colSpan='2')),
