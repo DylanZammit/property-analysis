@@ -33,5 +33,5 @@ region2img = {
     'North': 'sea.jpg',
     'South': 'marsaxlokk.jpg',
     'Valletta': 'sea.jpg',
-    'Sliema and St Julians Surroundings': 'marsaxlokk.jpg',
+    'Sliema and St Julians Surroundings': 'imdina.jpg',
 }

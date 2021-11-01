@@ -19,7 +19,8 @@ layout = html.Div([
     html.Div([
         dcc.Tabs(id='analysis-tabs', className='tabs', value='malta-tab', children=[
             dcc.Tab(label='Locality prices', value='malta-tab'),
-            dcc.Tab(label='Analysis', value='regression-tab')]),
+            dcc.Tab(label='Analysis', value='regression-tab'),
+            dcc.Tab(label='Compare prices', value='compare-tab')]),
         html.Div(id='analysis-content')
     ], id='scatter-area', style={'overflow': 'hidden'}),
     html.Div(id='hidden-div', style={'display':'none'}),

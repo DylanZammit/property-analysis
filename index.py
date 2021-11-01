@@ -8,11 +8,13 @@ from dash import html
 from dash import dcc
 from dash.dependencies import Input, Output, State
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
+import numpy as np
 
 from app import app
 from analysis.anova import ANOVA
-from apps import analysis, main, anova, regression, malta
+from apps import analysis, main, anova, regression, malta, compare
 import dash_daq as daq
 from read_data import df, region2loc, loc2region, region2img
 
@@ -49,6 +51,8 @@ def render_analysis_content(tab):
         return malta.layout
     elif tab == 'regression-tab':
         return regression.layout
+    elif tab == 'compare-tab':
+        return compare.layout
 
 @app.callback(
     #Output('page-content', 'style'),
@@ -73,10 +77,27 @@ def main_button_click(btn1, btn2):
     elif button == 'quote':
         return anova.layout, visible
 
-#@app.callback(
-#    Output('scroll-container', 'style'),
-#    Input('main-quote-link', 'pathname'),
-#)
+@app.callback(
+    Output(component_id='compare-bar', component_property='figure'),
+    Input(component_id='compare-loc1-dd', component_property='value'),
+    Input(component_id='compare-loc2-dd', component_property='value'),
+)
+def update_compare_bar(loc1, loc2):
+    fdf = df.copy()
+    fdf = fdf[fdf.locality.isin([loc1, loc2])]
+    fdf = fdf['type price locality'.split()]
+
+    loc_type = fdf.groupby(['locality', 'type']).mean()
+    types = list(loc_type.loc[loc1].index)
+    data1 = np.floor(loc_type.loc[loc1].values).flatten()
+    data2 = np.floor(loc_type.loc[loc2].values).flatten()
+    
+    fig_bar = go.Figure(data=[
+        go.Bar(name=loc1, x=types, y=data1),
+        go.Bar(name=loc2, x=types, y=data2)
+    ])
+    fig_bar.update_layout(transition_duration=500, clickmode='event+select', barmode='group')
+    return fig_bar
 
 @app.callback(
     Output(component_id='price-by-area', component_property='figure'),

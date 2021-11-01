@@ -11,7 +11,12 @@ dirname = os.path.dirname(__file__)
 
 df = pd.read_csv(os.path.join('data', 'remax_properties.csv'))
 
-price_by_loc = df.groupby('locality').mean()['price']
+statistic = 'median'
+
+if statistic == 'median':
+    price_by_loc = df.groupby('locality').median()['price']
+elif statistic == 'mean':
+    price_by_loc = df.groupby('locality').mean()['price']
 locs = np.unique(df.locality)
 
 fn = os.path.join('apps', 'geojson.json')
