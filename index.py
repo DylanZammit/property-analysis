@@ -87,7 +87,7 @@ def update_compare_bar(loc1, loc2):
     fdf = fdf[fdf.locality.isin([loc1, loc2])]
     fdf = fdf['type price locality'.split()]
 
-    loc_type = fdf.groupby(['locality', 'type']).mean()
+    loc_type = fdf.groupby(['locality', 'type']).median()
     types = list(loc_type.loc[loc1].index)
     data1 = np.floor(loc_type.loc[loc1].values).flatten()
     data2 = np.floor(loc_type.loc[loc2].values).flatten()
