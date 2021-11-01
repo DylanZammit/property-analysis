@@ -17,7 +17,7 @@ layout = html.Div(id='compare-content', children=[
                      ]
                     ),
         dcc.Dropdown(id='compare-loc2-dd',
-                     value='Sliema',
+                     value='Qawra',
                      options=[
                          {'label': k, 'value': k} for k in np.unique(df.locality)
                      ]
