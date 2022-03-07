@@ -9,6 +9,8 @@ import json
 import csv
 import time
 
+# script that scrapes remax and tries to infer any missing values for interior, exterior and total area. If this is not
+# possible remove the datum.
 parser = argparse.ArgumentParser()
 parser.add_argument('-n', help='number of properties', default=500, type=int)
 parser.add_argument('--debug', help='embed after request', action='store_true')

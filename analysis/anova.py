@@ -24,6 +24,12 @@ class ANOVA:
         self.fit()
 
     def PCA(self, cutoff=0.99):
+        '''
+        Chooses only msot relevant regressorts.
+        Finds eigenvalues of data matric, sort them 
+        and choose largest 2 eigvalues.
+        TODO: choose vars whose cumsum of eigenvals are < cutoff
+        '''
         covariates = 'bedrooms area int_area ext_area'.split()
         data = self.df[covariates]
         data = data.sub(data.mean()).div(data.std())
@@ -38,6 +44,9 @@ class ANOVA:
         return data1
 
     def get_model_eqn(self, features):
+        '''
+        creates R-style formula to input in ANOVA
+        '''
         return 'price ~ ' + '+'.join(features)
 
     def perform_analysis_dyn(self, categ=['locality', 'type'], covar=['area', 'bedrooms'], cross=False, suppress_output=False):
@@ -47,6 +56,11 @@ class ANOVA:
         self.learn_anova(features, suppress_output)
 
     def learn_anova(self, features=['area', 'C(locality)'], suppress_output=False):
+        '''
+        Apply ANOVA on all columns with pairwise interactions.
+        Check which p-values are greater than threshold and remove 
+        worst-offending one. Repeat process until no offenders
+        '''
 
         model_eqn = self.get_model_eqn(features)
 
@@ -88,6 +102,9 @@ class ANOVA:
             self.lm = lm
 
     def fit(self):
+        '''
+        fit ANOVA. This should be called and NOT learn_anova.
+        '''
         categ = ['locality', 'type']
         covar = ['bedrooms', 'area']
 
@@ -140,6 +157,10 @@ class ANOVA:
 class GUI:
 
     def __init__(self, model, width=500, height=250):
+        '''
+        Class that creates a simple GUI 
+        with dropdowns to choose property features
+        '''
         self.model = model
         locs = np.unique(model.df.locality)
         types = np.unique(model.df.type)
